@@ -575,7 +575,7 @@ export default function Game() {
 
       {/* Mobile touch controls */}
       {isMobile && (phase === "playing" || phase === "finished") && (
-        <div className="absolute bottom-0 left-0 right-0 flex justify-between items-end p-4 pb-6 z-10 pointer-events-none select-none">
+        <div className="absolute bottom-0 left-0 right-0 flex justify-between items-end p-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] z-20 pointer-events-none select-none">
           {/* Steering */}
           <div className="flex gap-3 pointer-events-auto">
             <button
