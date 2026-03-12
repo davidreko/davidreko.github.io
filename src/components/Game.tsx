@@ -472,7 +472,7 @@ export default function Game() {
   }, [startGame, closeContent, resetSkier]);
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-[#dce6ee]">
+    <div className="relative w-screen h-dvh overflow-hidden bg-[#dce6ee]">
       <canvas ref={canvasRef} className="w-full h-full block" />
       {activeZone && (phase === "viewing" || phase === "finished") && (
         <ContentCard
