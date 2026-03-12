@@ -29,7 +29,7 @@ export interface SkillCategory {
 
 export const about = {
   name: "David Reko",
-  title: "Software Engineer — Generative AI",
+  title: "Software Engineer - Generative AI",
   summary:
     "Software engineer specializing in production-grade agentic LLM systems and AI-powered developer tooling. Experienced designing multi-step code generation workflows, improving model output quality through prompt and dataset iteration, and shipping enterprise-scale AI features embedded in real-world development environments.",
 };

@@ -10,7 +10,7 @@ import {
   drawSkier,
   drawZoneIndicator,
   drawUI,
-  drawStartScreen,
+  drawStartOverlay,
   drawControls,
   drawSnowParticles,
   drawMinimap,
@@ -32,6 +32,7 @@ import {
   WORLD_W,
 } from "@/game/types";
 import ContentCard from "./ContentCard";
+import ResumePage from "./ResumePage";
 
 type GamePhase = "start" | "playing" | "viewing" | "finished";
 
@@ -68,6 +69,8 @@ export default function Game() {
   const [phase, setPhase] = useState<GamePhase>("start");
   const [activeZone, setActiveZone] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [showResume, setShowResume] = useState(false);
+  const showResumeRef = useRef(false);
 
   const skierRef = useRef<SkierState>(makeSkier());
   const entitiesRef = useRef<WorldEntity[]>([]);
@@ -75,6 +78,7 @@ export default function Game() {
   const phaseRef = useRef<GamePhase>("start");
   const nearZoneRef = useRef<string | null>(null);
   const frameRef = useRef(0);
+  const activeZoneRef = useRef<string | null>(null);
 
   // Stats
   const visitedRef = useRef<Set<string>>(new Set());
@@ -93,6 +97,10 @@ export default function Game() {
     phaseRef.current = phase;
   }, [phase]);
 
+  useEffect(() => {
+    showResumeRef.current = showResume;
+  }, [showResume]);
+
   const startGame = useCallback(() => {
     setPhase("playing");
     skierRef.current.speed = BASE_GRAVITY;
@@ -103,6 +111,7 @@ export default function Game() {
 
   const closeContent = useCallback(() => {
     setActiveZone(null);
+    activeZoneRef.current = null;
     if (phaseRef.current !== "finished") {
       setPhase("playing");
     }
@@ -161,7 +170,7 @@ export default function Game() {
       // ─── Update ───
 
       if (currentPhase === "start") {
-        if (input.anyKey()) startGame();
+        if (input.anyKey() && !showResumeRef.current) startGame();
       }
 
       if (currentPhase === "playing") {
@@ -170,6 +179,7 @@ export default function Game() {
         // Space — enter zone
         if (input.space() && nearZoneRef.current) {
           setActiveZone(nearZoneRef.current);
+          activeZoneRef.current = nearZoneRef.current;
           setPhase("viewing");
           skier.speed = 0;
           skier.vel = { x: 0, y: 0 };
@@ -253,6 +263,7 @@ export default function Game() {
               visitedRef.current.add("contact");
               setPhase("finished");
               setActiveZone("contact");
+              activeZoneRef.current = "contact";
             }
           }
 
@@ -340,12 +351,20 @@ export default function Game() {
           resetSkier();
           setPhase("playing");
           setActiveZone(null);
+          activeZoneRef.current = null;
         }
-        if (input.escape()) {
+        if (input.escape() && activeZoneRef.current) {
           setActiveZone(null);
+          activeZoneRef.current = null;
         }
         if (input.space()) {
-          setActiveZone("contact");
+          if (activeZoneRef.current) {
+            setActiveZone(null);
+            activeZoneRef.current = null;
+          } else {
+            setActiveZone("contact");
+            activeZoneRef.current = "contact";
+          }
         }
       }
 
@@ -411,11 +430,10 @@ export default function Game() {
       // Weather overlay (fog builds with altitude)
       drawWeatherOverlay(ctx, cam, cw, ch);
 
-      // Snow on top of everything
-      drawSnowParticles(ctx, snow, cw, ch);
-
-      // UI
-      if (currentPhase !== "start") {
+      // UI or start overlay (before snow so particles fall on top)
+      if (currentPhase === "start") {
+        drawStartOverlay(ctx, cw, ch);
+      } else {
         const elapsed = currentPhase === "finished"
           ? finishTimeRef.current - startTimeRef.current
           : Date.now() - startTimeRef.current;
@@ -436,7 +454,8 @@ export default function Game() {
         if (frameRef.current < 350) drawControls(ctx, cw, ch);
       }
 
-      if (currentPhase === "start") drawStartScreen(ctx, cw, ch);
+      // Snow on top of everything
+      drawSnowParticles(ctx, snow, cw, ch);
 
       input.flush();
       frameRef.current++;
@@ -465,18 +484,92 @@ export default function Game() {
             visited: visitedRef.current.size,
             totalZones: zones.length,
           } : undefined}
+          onViewResume={phase === "finished" ? () => { closeContent(); setShowResume(true); } : undefined}
+          onPlayAgain={phase === "finished" ? () => { closeContent(); resetSkier(); setPhase("playing"); } : undefined}
         />
       )}
 
-      {/* Mobile: tap to start */}
-      {isMobile && phase === "start" && (
-        <div
-          className="absolute inset-0 z-10"
-          onTouchStart={(e) => {
-            e.preventDefault();
-            inputRef.current?.simulateDown(" ");
-            setTimeout(() => inputRef.current?.simulateUp(" "), 100);
-          }}
+      {/* Start screen */}
+      {phase === "start" && !showResume && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-6 pointer-events-none">
+          <div className="pointer-events-auto max-w-md w-full">
+            <h1 className="text-5xl sm:text-6xl font-bold text-white mb-2 tracking-tight drop-shadow-lg">
+              David Reko
+            </h1>
+            <p className="text-lg sm:text-xl text-sky-400 font-medium mb-6">
+              Software Engineer - Generative AI
+            </p>
+
+            <div className="w-24 h-px bg-white/20 mx-auto mb-6" />
+
+            <p className="text-slate-400 mb-8 leading-relaxed">
+              Ski the mountain to explore my portfolio.
+              <br />
+              Stop at lodges along the way to learn more.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-col items-center gap-3 mb-8">
+              <button
+                onClick={startGame}
+                className="w-56 px-8 py-3 bg-amber-500 text-white font-bold rounded-xl hover:bg-amber-400 active:bg-amber-400 transition-colors text-lg shadow-lg shadow-amber-500/20"
+              >
+                Start Skiing
+              </button>
+              <button
+                onClick={() => setShowResume(true)}
+                className="w-56 px-6 py-2.5 bg-white/8 text-white/70 border border-white/15 rounded-xl hover:bg-white/15 hover:text-white active:bg-white/15 transition-colors"
+              >
+                View Resume
+              </button>
+            </div>
+
+            {/* Controls */}
+            <div className="hidden sm:grid grid-cols-[auto_auto] gap-x-6 gap-y-1.5 text-sm text-slate-500 mb-8 justify-center">
+              <span className="text-right font-mono text-slate-400">&larr; &rarr;</span>
+              <span className="text-left">Steer</span>
+              <span className="text-right font-mono text-slate-400">&uarr;</span>
+              <span className="text-left">Brake</span>
+              <span className="text-right font-mono text-slate-400">&darr;</span>
+              <span className="text-left">Tuck (speed up)</span>
+              <span className="text-right font-mono text-slate-400">SPACE</span>
+              <span className="text-left">Enter lodge</span>
+            </div>
+
+            {/* Social links */}
+            <div className="flex justify-center gap-5">
+              <a
+                href="https://github.com/davidreko"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-slate-500 hover:text-white transition-colors flex items-center gap-1.5 text-sm"
+              >
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
+                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                </svg>
+                GitHub
+              </a>
+              <a
+                href="https://linkedin.com/in/davidreko"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-slate-500 hover:text-white transition-colors flex items-center gap-1.5 text-sm"
+              >
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                </svg>
+                LinkedIn
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Resume page */}
+      {showResume && (
+        <ResumePage
+          onClose={() => setShowResume(false)}
+          onStartGame={() => { setShowResume(false); startGame(); }}
         />
       )}
 
@@ -486,7 +579,7 @@ export default function Game() {
           {/* Steering */}
           <div className="flex gap-3 pointer-events-auto">
             <button
-              className="w-16 h-16 rounded-full bg-white/15 border-2 border-white/25 flex items-center justify-center text-white text-2xl active:bg-white/30"
+              className="w-16 h-16 rounded-full bg-slate-800/60 border-2 border-slate-600/60 flex items-center justify-center text-white text-2xl shadow-lg active:bg-slate-700/70"
               onTouchStart={(e) => { e.preventDefault(); inputRef.current?.simulateDown("ArrowLeft"); }}
               onTouchEnd={(e) => { e.preventDefault(); inputRef.current?.simulateUp("ArrowLeft"); }}
               onTouchCancel={() => inputRef.current?.simulateUp("ArrowLeft")}
@@ -494,7 +587,7 @@ export default function Game() {
               &#9664;
             </button>
             <button
-              className="w-16 h-16 rounded-full bg-white/15 border-2 border-white/25 flex items-center justify-center text-white text-2xl active:bg-white/30"
+              className="w-16 h-16 rounded-full bg-slate-800/60 border-2 border-slate-600/60 flex items-center justify-center text-white text-2xl shadow-lg active:bg-slate-700/70"
               onTouchStart={(e) => { e.preventDefault(); inputRef.current?.simulateDown("ArrowRight"); }}
               onTouchEnd={(e) => { e.preventDefault(); inputRef.current?.simulateUp("ArrowRight"); }}
               onTouchCancel={() => inputRef.current?.simulateUp("ArrowRight")}
@@ -507,7 +600,7 @@ export default function Game() {
           <div className="flex gap-3 items-end pointer-events-auto">
             <div className="flex flex-col gap-3">
               <button
-                className="w-16 h-16 rounded-full bg-white/15 border-2 border-white/25 flex items-center justify-center text-white text-xs font-bold active:bg-white/30"
+                className="w-16 h-16 rounded-full bg-slate-800/60 border-2 border-slate-600/60 flex items-center justify-center text-white text-xs font-bold shadow-lg active:bg-slate-700/70"
                 onTouchStart={(e) => { e.preventDefault(); inputRef.current?.simulateDown("ArrowUp"); }}
                 onTouchEnd={(e) => { e.preventDefault(); inputRef.current?.simulateUp("ArrowUp"); }}
                 onTouchCancel={() => inputRef.current?.simulateUp("ArrowUp")}
@@ -515,7 +608,7 @@ export default function Game() {
                 BRAKE
               </button>
               <button
-                className="w-16 h-16 rounded-full bg-white/15 border-2 border-white/25 flex items-center justify-center text-white text-xs font-bold active:bg-white/30"
+                className="w-16 h-16 rounded-full bg-slate-800/60 border-2 border-slate-600/60 flex items-center justify-center text-white text-xs font-bold shadow-lg active:bg-slate-700/70"
                 onTouchStart={(e) => { e.preventDefault(); inputRef.current?.simulateDown("ArrowDown"); }}
                 onTouchEnd={(e) => { e.preventDefault(); inputRef.current?.simulateUp("ArrowDown"); }}
                 onTouchCancel={() => inputRef.current?.simulateUp("ArrowDown")}
@@ -524,7 +617,7 @@ export default function Game() {
               </button>
             </div>
             <button
-              className="w-16 h-16 rounded-full bg-sky-500/25 border-2 border-sky-400/40 flex items-center justify-center text-white text-xs font-bold active:bg-sky-500/40"
+              className="w-16 h-16 rounded-full bg-sky-600/60 border-2 border-sky-400/50 flex items-center justify-center text-white text-xs font-bold shadow-lg active:bg-sky-500/70"
               onTouchStart={(e) => {
                 e.preventDefault();
                 inputRef.current?.simulateDown(" ");

@@ -1,6 +1,6 @@
 "use client";
 
-import { about, jobs, education, skills, socialLinks } from "@/data/resume";
+import { about, jobs, education, skills, socialLinks, type SkillCategory } from "@/data/resume";
 
 interface RunStats {
   elapsed: number;
@@ -13,9 +13,11 @@ interface ContentCardProps {
   zoneId: string;
   onClose: () => void;
   stats?: RunStats;
+  onViewResume?: () => void;
+  onPlayAgain?: () => void;
 }
 
-export default function ContentCard({ zoneId, onClose, stats }: ContentCardProps) {
+export default function ContentCard({ zoneId, onClose, stats, onViewResume, onPlayAgain }: ContentCardProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
@@ -43,7 +45,7 @@ export default function ContentCard({ zoneId, onClose, stats }: ContentCardProps
         {zoneId === "education" && <EducationContent />}
         {zoneId === "skills" && <SkillsContent />}
         {zoneId === "projects" && <ProjectsContent />}
-        {zoneId === "contact" && <ContactContent stats={stats} />}
+        {zoneId === "contact" && <ContactContent stats={stats} onViewResume={onViewResume} onPlayAgain={onPlayAgain} />}
       </div>
     </div>
   );
@@ -146,7 +148,7 @@ function ProjectsContent() {
   );
 }
 
-function ContactContent({ stats }: { stats?: RunStats }) {
+function ContactContent({ stats, onViewResume, onPlayAgain }: { stats?: RunStats; onViewResume?: () => void; onPlayAgain?: () => void }) {
   return (
     <>
       <h2 className="text-3xl font-bold text-slate-800 mb-2">Base Lodge</h2>
@@ -182,6 +184,17 @@ function ContactContent({ stats }: { stats?: RunStats }) {
         </div>
       )}
 
+      <div className="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
+        <p className="text-sm text-slate-600 leading-relaxed mb-3">{about.summary}</p>
+        <div className="flex flex-wrap gap-1.5">
+          {skills.flatMap((cat: SkillCategory) => cat.items.slice(0, 3)).map((s: string, i: number) => (
+            <span key={i} className="px-2 py-0.5 bg-sky-50 text-sky-700 text-xs rounded border border-sky-200">
+              {s}
+            </span>
+          ))}
+        </div>
+      </div>
+
       <p className="text-slate-500 mb-6">
         Thanks for skiing with me! Let&apos;s connect.
       </p>
@@ -209,6 +222,27 @@ function ContactContent({ stats }: { stats?: RunStats }) {
           LinkedIn
         </a>
       </div>
+
+      {(onViewResume || onPlayAgain) && (
+        <div className="flex gap-3 mt-6 pt-6 border-t border-slate-200">
+          {onViewResume && (
+            <button
+              onClick={onViewResume}
+              className="flex-1 px-4 py-2.5 bg-sky-50 text-sky-700 font-medium rounded-xl hover:bg-sky-100 transition-colors text-sm border border-sky-200"
+            >
+              View Full Resume
+            </button>
+          )}
+          {onPlayAgain && (
+            <button
+              onClick={onPlayAgain}
+              className="flex-1 px-4 py-2.5 bg-amber-50 text-amber-700 font-medium rounded-xl hover:bg-amber-100 transition-colors text-sm border border-amber-200"
+            >
+              Play Again
+            </button>
+          )}
+        </div>
+      )}
     </>
   );
 }

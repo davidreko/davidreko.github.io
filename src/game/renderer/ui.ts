@@ -91,57 +91,36 @@ export function drawUI(
   }
 }
 
-export function drawStartScreen(
+export function drawStartOverlay(
   ctx: CanvasRenderingContext2D,
   cw: number,
   ch: number
 ) {
-  ctx.fillStyle = "rgba(8, 16, 35, 0.8)";
+  ctx.fillStyle = "rgba(8, 16, 35, 0.82)";
   ctx.fillRect(0, 0, cw, ch);
 
-  ctx.fillStyle = "rgba(255, 255, 255, 0.03)";
+  // Mountain silhouettes
+  ctx.fillStyle = "rgba(255, 255, 255, 0.02)";
   ctx.beginPath();
-  ctx.moveTo(cw * 0.15, ch);
-  ctx.lineTo(cw * 0.5, ch * 0.2);
-  ctx.lineTo(cw * 0.85, ch);
+  ctx.moveTo(0, ch);
+  ctx.lineTo(cw * 0.12, ch * 0.55);
+  ctx.lineTo(cw * 0.28, ch * 0.72);
+  ctx.lineTo(cw * 0.5, ch * 0.18);
+  ctx.lineTo(cw * 0.72, ch * 0.72);
+  ctx.lineTo(cw * 0.88, ch * 0.55);
+  ctx.lineTo(cw, ch);
   ctx.closePath();
   ctx.fill();
 
-  ctx.fillStyle = "#fff";
-  ctx.font = "bold 54px sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText("David Reko", cw / 2, ch / 2 - 82);
-
-  ctx.fillStyle = "#5ba0e0";
-  ctx.font = "22px sans-serif";
-  ctx.fillText("Software Engineer \u2014 Generative AI", cw / 2, ch / 2 - 42);
-
-  ctx.strokeStyle = "rgba(255,255,255,0.12)";
-  ctx.lineWidth = 1;
+  ctx.fillStyle = "rgba(255, 255, 255, 0.015)";
   ctx.beginPath();
-  ctx.moveTo(cw / 2 - 140, ch / 2 - 14);
-  ctx.lineTo(cw / 2 + 140, ch / 2 - 14);
-  ctx.stroke();
-
-  ctx.fillStyle = "#a0b5ca";
-  ctx.font = "17px sans-serif";
-  ctx.fillText("Ski the mountain to explore my portfolio", cw / 2, ch / 2 + 22);
-
-  ctx.fillStyle = "#6a8098";
-  ctx.font = "13px sans-serif";
-  ctx.fillText(
-    "\u2190 \u2192  steer    \u2193  tuck    \u2191  brake    SPACE  interact    R  reset",
-    cw / 2,
-    ch / 2 + 56
-  );
-
-  const blink = Math.sin(Date.now() / 400) > 0;
-  if (blink) {
-    ctx.fillStyle = "#f0c830";
-    ctx.font = "bold 18px sans-serif";
-    ctx.fillText("Press any key to drop in", cw / 2, ch / 2 + 115);
-  }
-  ctx.textAlign = "left";
+  ctx.moveTo(0, ch);
+  ctx.lineTo(cw * 0.3, ch * 0.45);
+  ctx.lineTo(cw * 0.55, ch * 0.65);
+  ctx.lineTo(cw * 0.75, ch * 0.35);
+  ctx.lineTo(cw, ch);
+  ctx.closePath();
+  ctx.fill();
 }
 
 export function drawControls(

@@ -4,7 +4,7 @@ export { drawSkier } from "./skier";
 export {
   drawZoneIndicator,
   drawUI,
-  drawStartScreen,
+  drawStartOverlay,
   drawControls,
   drawMinimap,
 } from "./ui";
