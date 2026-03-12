@@ -45,7 +45,6 @@ export const jobs: Job[] = [
         title: "Software Engineer (IC2)",
         period: "February 2024 – Present",
         bullets: [
-          "Porting the Build Agent to MCP server environments, adapting multi-step LLM code generation workflows and platform integrations to support new deployment contexts.",
           "Contributed to the development of the Build Agent, an agentic coding assistant delivered as a VS Code browser plugin, translating natural language prompts into full applications through multi-step LLM workflows and platform-specific API integrations.",
           "Developed a RAG-based code assistance tool using TypeScript and the ServiceNow SDK, enhancing LLM responses for code auto-complete and code explanation, with a successful launch on the ServiceNow Store.",
           "Engineered prompts and optimized model outputs for the initial release of code auto-complete for ServiceNow scripting, improving acceptance rates and reliability of LLM-generated code.",
