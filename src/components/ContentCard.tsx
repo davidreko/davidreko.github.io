@@ -2,12 +2,20 @@
 
 import { about, jobs, education, skills, socialLinks } from "@/data/resume";
 
+interface RunStats {
+  elapsed: number;
+  crashes: number;
+  visited: number;
+  totalZones: number;
+}
+
 interface ContentCardProps {
   zoneId: string;
   onClose: () => void;
+  stats?: RunStats;
 }
 
-export default function ContentCard({ zoneId, onClose }: ContentCardProps) {
+export default function ContentCard({ zoneId, onClose, stats }: ContentCardProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
@@ -35,7 +43,7 @@ export default function ContentCard({ zoneId, onClose }: ContentCardProps) {
         {zoneId === "education" && <EducationContent />}
         {zoneId === "skills" && <SkillsContent />}
         {zoneId === "projects" && <ProjectsContent />}
-        {zoneId === "contact" && <ContactContent />}
+        {zoneId === "contact" && <ContactContent stats={stats} />}
       </div>
     </div>
   );
@@ -138,10 +146,42 @@ function ProjectsContent() {
   );
 }
 
-function ContactContent() {
+function ContactContent({ stats }: { stats?: RunStats }) {
   return (
     <>
       <h2 className="text-3xl font-bold text-slate-800 mb-2">Base Lodge</h2>
+
+      {stats && (
+        <div className="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
+          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
+            Run Summary
+          </h3>
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div>
+              <div className="text-2xl font-bold text-slate-800">
+                {Math.floor(stats.elapsed / 60000)}:
+                {Math.floor((stats.elapsed % 60000) / 1000)
+                  .toString()
+                  .padStart(2, "0")}
+              </div>
+              <div className="text-xs text-slate-400">Time</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-slate-800">
+                {stats.crashes}
+              </div>
+              <div className="text-xs text-slate-400">Crashes</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-slate-800">
+                {stats.visited}/{stats.totalZones}
+              </div>
+              <div className="text-xs text-slate-400">Lodges</div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <p className="text-slate-500 mb-6">
         Thanks for skiing with me! Let&apos;s connect.
       </p>

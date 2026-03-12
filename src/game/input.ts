@@ -71,6 +71,17 @@ export class InputManager {
     return this.justPressed.size > 0;
   }
 
+  simulateDown(key: string) {
+    if (!this.keys.has(key)) {
+      this.justPressed.add(key);
+    }
+    this.keys.add(key);
+  }
+
+  simulateUp(key: string) {
+    this.keys.delete(key);
+  }
+
   destroy() {
     window.removeEventListener("keydown", this.onKeyDown);
     window.removeEventListener("keyup", this.onKeyUp);

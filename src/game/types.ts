@@ -11,7 +11,8 @@ export type EntityType =
   | "sign"
   | "mogul"
   | "cliff"
-  | "stump";
+  | "stump"
+  | "ice";
 
 export interface WorldEntity {
   pos: Vec2;
@@ -39,6 +40,17 @@ export interface SkierState {
   crashed: boolean;
   crashTimer: number;
   invincible: number; // frames of invincibility after crash
+}
+
+export type Camera = Vec2;
+
+export interface Snowflake {
+  x: number;
+  y: number;
+  size: number;
+  speedY: number;
+  speedX: number;
+  opacity: number;
 }
 
 // World dimensions

@@ -148,6 +148,27 @@ export function generateEntities(): WorldEntity[] {
     }
   }
 
+  // ─── Ice patches (speed boost zones) ───
+  const iceFields = [
+    { cx: 900, cy: 1800, count: 3 },
+    { cx: 1300, cy: 3800, count: 4 },
+    { cx: 600, cy: 5800, count: 3 },
+    { cx: 1100, cy: 7600, count: 4 },
+    { cx: 800, cy: 9400, count: 3 },
+  ];
+  for (const field of iceFields) {
+    for (let i = 0; i < field.count; i++) {
+      entities.push({
+        pos: {
+          x: field.cx + (rand() - 0.5) * 300,
+          y: field.cy + (rand() - 0.5) * 200,
+        },
+        type: "ice",
+        size: 0.7 + rand() * 0.6,
+      });
+    }
+  }
+
   return entities;
 }
 
