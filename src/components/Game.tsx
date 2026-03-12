@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { InputManager } from "@/game/input";
+import { AudioManager } from "@/game/audio";
 import { zones, generateEntities, distVec } from "@/game/world";
 import {
   drawBackground,
@@ -79,6 +80,7 @@ export default function Game() {
   const nearZoneRef = useRef<string | null>(null);
   const frameRef = useRef(0);
   const activeZoneRef = useRef<string | null>(null);
+  const audioRef = useRef<AudioManager>(new AudioManager());
 
   // Stats
   const visitedRef = useRef<Set<string>>(new Set());
@@ -102,6 +104,7 @@ export default function Game() {
   }, [showResume]);
 
   const startGame = useCallback(() => {
+    audioRef.current.init();
     setPhase("playing");
     skierRef.current.speed = BASE_GRAVITY;
     startTimeRef.current = Date.now();
@@ -183,8 +186,9 @@ export default function Game() {
           setPhase("viewing");
           skier.speed = 0;
           skier.vel = { x: 0, y: 0 };
-          // Track visited
           visitedRef.current.add(nearZoneRef.current);
+          audioRef.current.playLodgeEnter();
+          audioRef.current.stopWind();
         }
 
         if (!skier.crashed) {
@@ -210,7 +214,7 @@ export default function Game() {
               const iceRadius = ent.size * 45;
               if (distVec(skier.pos, ent.pos) < iceRadius) {
                 gravity *= 1.6;
-                skier.angle *= 0.96; // Reduced grip on ice
+                skier.angle *= 0.96;
                 break;
               }
             }
@@ -256,7 +260,7 @@ export default function Game() {
             skier.pos.x = LODGE_X;
             skier.vel = { x: 0, y: 0 };
             skier.speed = 0;
-            // Trigger finish — show base lodge card with stats
+            audioRef.current.stopWind();
             if (currentPhase === "playing") {
               finishTimeRef.current = Date.now();
               nearZoneRef.current = "contact";
@@ -299,6 +303,7 @@ export default function Game() {
                 skier.speed = 0;
                 skier.vel = { x: 0, y: 0 };
                 crashCountRef.current++;
+                audioRef.current.playCrash();
                 break;
               }
             }
@@ -340,6 +345,9 @@ export default function Game() {
         } else {
           shakeRef.current = { x: 0, y: 0 };
         }
+
+        // Audio update
+        audioRef.current.update(skier.speed, MAX_SPEED, skier.angle / MAX_TURN, false);
       }
 
       if (currentPhase === "viewing") {
