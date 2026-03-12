@@ -1,6 +1,6 @@
 "use client";
 
-import { about, jobs, education, skills, socialLinks, type SkillCategory } from "@/data/resume";
+import { about, jobs, education, skills, projects, socialLinks, type SkillCategory } from "@/data/resume";
 
 interface RunStats {
   elapsed: number;
@@ -139,11 +139,35 @@ function SkillsContent() {
 function ProjectsContent() {
   return (
     <>
-      <h2 className="text-3xl font-bold text-slate-800 mb-4">Projects</h2>
-      <div className="text-center py-8">
-        <p className="text-slate-400 text-lg">Trails under construction</p>
-        <p className="text-slate-300 mt-2">Check back soon for project showcases</p>
-      </div>
+      <h2 className="text-3xl font-bold text-slate-800 mb-6">Projects</h2>
+      {projects.map((project, i) => (
+        <div key={i} className={i > 0 ? "mt-6 pt-6 border-t border-slate-200" : ""}>
+          <div className="flex items-baseline justify-between mb-2">
+            <h3 className="text-xl font-bold text-slate-800">{project.name}</h3>
+            {project.link && (
+              <a
+                href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-sky-500 hover:text-sky-600 transition-colors"
+              >
+                View &rarr;
+              </a>
+            )}
+          </div>
+          <p className="text-sm text-slate-600 leading-relaxed mb-3">{project.description}</p>
+          <div className="flex flex-wrap gap-1.5">
+            {project.tech.map((t, j) => (
+              <span
+                key={j}
+                className="px-2.5 py-0.5 bg-sky-50 text-sky-700 text-xs rounded-lg border border-sky-200"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+      ))}
     </>
   );
 }

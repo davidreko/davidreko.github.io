@@ -17,9 +17,20 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://davidreko.github.io"),
   title: "David Reko | Software Engineer",
   description:
     "Software engineer specializing in production-grade agentic LLM systems and AI-powered developer tooling.",
+  openGraph: {
+    title: "David Reko | Software Engineer",
+    description:
+      "Ski the mountain to explore my portfolio. Software engineer specializing in generative AI and developer tooling.",
+    type: "website",
+    siteName: "David Reko",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({

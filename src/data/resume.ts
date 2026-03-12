@@ -114,6 +114,23 @@ export const skills: SkillCategory[] = [
   },
 ];
 
+export interface Project {
+  name: string;
+  description: string;
+  tech: string[];
+  link?: string;
+}
+
+export const projects: Project[] = [
+  {
+    name: "Portfolio Mountain",
+    description:
+      "An interactive SkiFree-inspired portfolio built with Next.js and Canvas 2D. Ski down a mountain to explore resume content in lodges, with procedural terrain, collision physics, and Web Audio sound effects.",
+    tech: ["Next.js", "React", "TypeScript", "Canvas 2D", "Web Audio API", "Tailwind CSS"],
+    link: "https://github.com/davidreko/davidreko.github.io",
+  },
+];
+
 export const socialLinks = {
   github: "https://github.com/davidreko",
   linkedin: "https://linkedin.com/in/davidreko",

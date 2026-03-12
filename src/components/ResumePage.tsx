@@ -1,6 +1,6 @@
 "use client";
 
-import { about, jobs, education, skills, socialLinks } from "@/data/resume";
+import { about, jobs, education, skills, projects, socialLinks } from "@/data/resume";
 
 interface ResumePageProps {
   onClose: () => void;
@@ -118,6 +118,43 @@ export default function ResumePage({ onClose, onStartGame }: ResumePageProps) {
               </div>
             ))}
           </div>
+        </section>
+
+        {/* Projects */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-white mb-6 border-b border-slate-700 pb-2">
+            Projects
+          </h2>
+          {projects.map((project, i) => (
+            <div key={i} className={i > 0 ? "mt-6" : ""}>
+              <div className="flex items-baseline justify-between mb-2 flex-wrap gap-x-4">
+                <h3 className="text-lg font-bold text-white">{project.name}</h3>
+                {project.link && (
+                  <a
+                    href={project.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-sky-400 hover:text-sky-300 transition-colors"
+                  >
+                    View &rarr;
+                  </a>
+                )}
+              </div>
+              <p className="text-sm text-slate-400 leading-relaxed mb-3">
+                {project.description}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {project.tech.map((t, j) => (
+                  <span
+                    key={j}
+                    className="px-3 py-1 bg-sky-900/40 text-sky-300 text-sm rounded-lg border border-sky-800/50"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
         </section>
 
         {/* Bottom actions */}
