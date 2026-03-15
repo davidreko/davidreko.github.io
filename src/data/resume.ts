@@ -123,6 +123,13 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    name: "Spore",
+    description:
+      "A self-evolving AI agent that starts with nothing but a system prompt and a shell tool. It builds its own tools, rewrites its own prompt, and can modify its own source code - all live, no restart needed.",
+    tech: ["TypeScript", "Bun", "Anthropic SDK", "Zod"],
+    link: "https://github.com/davidreko/spore",
+  },
+  {
     name: "Portfolio Mountain",
     description:
       "An interactive SkiFree-inspired portfolio built with Next.js and Canvas 2D. Ski down a mountain to explore resume content in lodges, with procedural terrain, collision physics, and Web Audio sound effects.",
