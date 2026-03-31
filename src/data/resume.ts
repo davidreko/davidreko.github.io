@@ -123,6 +123,13 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    name: "no",
+    description:
+      "An AI coding agent with a built-in judge - a second LLM pass that reviews plans before execution. Catches overengineering, scope creep, and premature abstraction before they become code.",
+    tech: ["TypeScript", "Anthropic SDK", "Node.js"],
+    link: "https://github.com/davidreko/no",
+  },
+  {
     name: "Spore",
     description:
       "A self-evolving AI agent that starts with nothing but a system prompt and a shell tool. It builds its own tools, rewrites its own prompt, and can modify its own source code - all live, no restart needed.",
