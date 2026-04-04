@@ -130,6 +130,13 @@ export const projects: Project[] = [
     link: "https://github.com/davidreko/no",
   },
   {
+    name: "anthropic-mock",
+    description:
+      "A drop-in mock for the Anthropic SDK client. Generates structurally correct responses - including streaming, tool use, and extended thinking - without API calls. Built for testing agent loops and tool-use pipelines.",
+    tech: ["TypeScript", "Anthropic SDK", "Vitest"],
+    link: "https://github.com/davidreko/anthropic-mock",
+  },
+  {
     name: "Spore",
     description:
       "A self-evolving AI agent that starts with nothing but a system prompt and a shell tool. It builds its own tools, rewrites its own prompt, and can modify its own source code - all live, no restart needed.",
